@@ -1,0 +1,129 @@
+{
+  "info": {
+    "_postman_id": "ea2db7c2-6e69-49d5-a507-cafeflow00001",
+    "name": "CafeFlow GraphQL Product Service",
+    "description": "GraphQL operations and health checks for the CafeFlow product catalog.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000"
+    },
+    {
+      "key": "productId",
+      "value": "replace-after-creating-a-product"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Liveness",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health/live"
+          }
+        },
+        {
+          "name": "Readiness",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health/ready"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\":\"mutation CreateProduct($input: CreateProductInput!) { createProduct(input: $input) { id sku name price stockQuantity inventoryStatus categoryId active createdAt } }\",\"variables\":{\"input\":{\"sku\":\"COF-101\",\"name\":\"Cappuccino\",\"description\":\"Espresso with steamed milk\",\"price\":180,\"stockQuantity\":20,\"categoryId\":\"coffee\",\"active\":true}}}"
+            },
+            "url": "{{baseUrl}}/graphql"
+          }
+        },
+        {
+          "name": "List Products",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\":\"query Products($page: Int, $limit: Int, $search: String) { products(page: $page, limit: $limit, search: $search, sortBy: CREATED_AT, sortDirection: DESC) { items { id sku name price stockQuantity inventoryStatus categoryId active } pageInfo { page limit totalItems totalPages hasNextPage hasPreviousPage } } }\",\"variables\":{\"page\":1,\"limit\":10,\"search\":\"coffee\"}}"
+            },
+            "url": "{{baseUrl}}/graphql"
+          }
+        },
+        {
+          "name": "Get Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\":\"query Product($id: ID!) { product(id: $id) { id sku name description price stockQuantity inventoryStatus categoryId active createdAt updatedAt } }\",\"variables\":{\"id\":\"{{productId}}\"}}"
+            },
+            "url": "{{baseUrl}}/graphql"
+          }
+        },
+        {
+          "name": "Update Stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\":\"mutation UpdateStock($id: ID!, $stockQuantity: Int!) { updateProductStock(id: $id, stockQuantity: $stockQuantity) { id sku stockQuantity inventoryStatus updatedAt } }\",\"variables\":{\"id\":\"{{productId}}\",\"stockQuantity\":4}}"
+            },
+            "url": "{{baseUrl}}/graphql"
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\":\"mutation DeleteProduct($id: ID!) { deleteProduct(id: $id) { success message deletedId } }\",\"variables\":{\"id\":\"{{productId}}\"}}"
+            },
+            "url": "{{baseUrl}}/graphql"
+          }
+        }
+      ]
+    }
+  ]
+}

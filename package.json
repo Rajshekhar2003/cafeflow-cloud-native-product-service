@@ -1,0 +1,40 @@
+{
+  "name": "cafeflow-product-service",
+  "version": "1.0.0",
+  "description": "Cloud-native GraphQL product catalog built with Node.js and MongoDB.",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "check": "node --check src/server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "graphql",
+    "mongodb",
+    "docker",
+    "kubernetes"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@apollo/server": "^5.2.0",
+    "@as-integrations/express5": "^1.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "graphql": "^16.11.0",
+    "helmet": "^8.1.0",
+    "mongoose": "^9.1.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.18",
+    "vitest": "^4.0.18"
+  }
+}

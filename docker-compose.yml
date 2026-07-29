@@ -1,0 +1,60 @@
+services:
+  mongodb:
+    image: mongo:8.0
+    container_name: cafeflow-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: cafeflow_product_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - cafeflow-network
+
+  product-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cafeflow-product-service
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      MONGO_URI: mongodb://mongodb:27017/cafeflow_product_db
+      CORS_ORIGIN: "*"
+      GRAPHQL_INTROSPECTION: "true"
+      LOG_LEVEL: info
+      LOW_STOCK_THRESHOLD: 5
+    ports:
+      - "4000:4000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/health/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - cafeflow-network
+
+volumes:
+  mongodb-data:
+
+networks:
+  cafeflow-network:
+    driver: bridge
